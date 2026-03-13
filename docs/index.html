@@ -141,24 +141,25 @@
             <td><code>EPIC-N</code></td>
             <td>Epic</td>
             <td>—</td>
-            <td>A broad initiative or theme. Stands alone; does not list or track its specs.</td>
+            <td>A broad initiative or theme. Stands alone; does not reference other artifacts, including specs or tasks.</td>
           </tr>
           <tr>
             <td><code>SPEC-N</code></td>
             <td>Spec</td>
             <td><code>epic: EPIC-N</code></td>
-            <td>A requirements or design document. References its parent epic; does not list or track its tasks.</td>
+            <td>A requirements or design document scoped to one epic.</td>
           </tr>
           <tr>
             <td><code>TASK-N</code></td>
             <td>Task</td>
             <td><code>spec: SPEC-N</code></td>
-            <td>A discrete unit of deliverable work. References its parent spec.</td>
+            <td>A discrete unit of deliverable work that implements part of a spec.</td>
           </tr>
         </tbody>
       </table>
     </div>
 
+    <h3>Upward, child-declared membership</h3>
     <p>
       An epic is not responsible for knowing which specs belong to it, and a spec is not
       responsible for knowing which tasks implement it. Membership is always declared by the
