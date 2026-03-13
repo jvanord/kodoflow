@@ -2,6 +2,8 @@
 
 **KodoFlow** is a VS Code extension for teams practicing **Kodo Flow** — a documentation-driven task management methodology where tasks live in your repository as Markdown files and Git is the system of record.
 
+Full methodology guide: **https://jvanord.github.io/kodoflow**
+
 ---
 
 ## The Kodo Flow Methodology
@@ -47,7 +49,7 @@ status: backlog
 priority: high
 readiness: ready
 epic: EPIC-3
-spec: docs/product/specs/rss-mixtape.md
+spec: SPEC-N
 depends_on:
   - TASK-110
 labels:
@@ -96,7 +98,7 @@ KodoFlow is a VS Code extension that provides a smooth visual interface for work
 
 | Setting | Default | Description |
 |---|---|---|
-| `kodoflow.basePath` | `docs/product` | Base path for product documentation |
+| `kodoflow.basePath` | `docs/product` | Base path for product documentation. Adjust if your project uses a different layout (e.g. `product` or `docs`). |
 | `kodoflow.tasksFolder` | `tasks` | Tasks folder name (relative to basePath) |
 | `kodoflow.specsFolder` | `specs` | Specs folder name (relative to basePath) |
 | `kodoflow.epicsFolder` | `epics` | Epics folder name (relative to basePath) |
@@ -121,3 +123,5 @@ Most project management tools live outside your codebase. That means two sources
 Kodo Flow keeps everything in one place. Your tasks are files. Your history is commits. Your tooling is whatever reads Markdown — which is everything.
 
 KodoFlow makes that workflow feel native inside VS Code.
+
+Read the full methodology guide at **https://jvanord.github.io/kodoflow**.

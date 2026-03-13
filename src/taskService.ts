@@ -102,12 +102,14 @@ export class TaskService {
       vscode.window.showWarningMessage('No spec defined for this task.');
       return;
     }
-    const specPath = path.join(this.workspaceRoot, task.spec);
-    try {
-      await this.openFile(specPath);
-    } catch {
+    const specPath =
+      this.index.specPaths.get(task.spec) ??
+      this.index.specPaths.get(path.basename(task.spec, '.md'));
+    if (!specPath) {
       vscode.window.showErrorMessage(`Spec file not found: ${task.spec}`);
+      return;
     }
+    await this.openFile(specPath);
   }
 
   async openEpic(taskId: string): Promise<void> {

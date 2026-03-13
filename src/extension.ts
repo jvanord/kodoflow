@@ -130,8 +130,8 @@ async function collectTaskData(): Promise<
 
   const spec =
     (await vscode.window.showInputBox({
-      prompt: 'Spec file path (optional)',
-      placeHolder: 'docs/product/specs/my-spec.md',
+      prompt: 'Spec ID (optional)',
+      placeHolder: 'SPEC-3',
     })) ?? '';
 
   const labelsRaw =

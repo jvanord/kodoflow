@@ -149,7 +149,13 @@ export class RepositoryIndex {
       // Index by relative path from workspace root and by filename stem
       const relPath = path.relative(this.workspaceRoot, uri.fsPath);
       target.set(relPath, uri.fsPath);
-      target.set(path.basename(uri.fsPath, '.md'), uri.fsPath);
+      const stem = path.basename(uri.fsPath, '.md');
+      target.set(stem, uri.fsPath);
+      // Also index by ID prefix (e.g. "EPIC-1" from "EPIC-1-platform-hardening")
+      const idMatch = stem.match(/^([A-Z]+-\d+)/);
+      if (idMatch) {
+        target.set(idMatch[1], uri.fsPath);
+      }
       files.push(uri.fsPath);
     }
   }
@@ -162,6 +168,14 @@ export class RepositoryIndex {
         this._warnings.push({
           type: 'missingSpec',
           message: `Task ${task.id}: spec not found: ${task.spec}`,
+          filePath: task.filePath,
+        });
+      }
+
+      if (task.epic && !this._epicPaths.has(task.epic)) {
+        this._warnings.push({
+          type: 'missingEpic',
+          message: `Task ${task.id}: epic not found: ${task.epic}`,
           filePath: task.filePath,
         });
       }

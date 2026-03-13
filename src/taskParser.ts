@@ -1,6 +1,11 @@
 import * as yaml from 'js-yaml';
 import { Task } from './types';
 
+function normalizeRef(value: string): string {
+  const match = value.match(/^\[([^\]]+)\]\([^)]*\)$/);
+  return match ? match[1] : value;
+}
+
 export function parseTask(
   content: string,
   filePath: string,
@@ -27,8 +32,8 @@ export function parseTask(
     status,
     priority: String(frontmatter['priority'] ?? ''),
     readiness: String(frontmatter['readiness'] ?? ''),
-    epic: String(frontmatter['epic'] ?? ''),
-    spec: String(frontmatter['spec'] ?? ''),
+    epic: normalizeRef(String(frontmatter['epic'] ?? '')),
+    spec: normalizeRef(String(frontmatter['spec'] ?? '')),
     labels: Array.isArray(frontmatter['labels']) ? frontmatter['labels'].map(String) : [],
     code_paths: Array.isArray(frontmatter['code_paths']) ? frontmatter['code_paths'].map(String) : [],
     depends_on: Array.isArray(frontmatter['depends_on']) ? frontmatter['depends_on'].map(String) : [],

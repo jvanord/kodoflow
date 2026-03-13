@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kodo Flow — Documentation-driven task management</title>
+  <meta name="description" content="Kodo Flow is a documentation-driven task management methodology where every task is a Markdown file and Git is the system of record." />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a class="nav-brand" href="#top">Kodo Flow</a>
+    <a href="#what-is">What is it?</a>
+    <a href="#principles">Principles</a>
+    <a href="#structure">Structure</a>
+    <a href="#ids">IDs</a>
+    <a href="#format">Task Format</a>
+    <a href="#getting-started">Get Started</a>
+    <a href="#extension">VS Code</a>
+  </div>
+</nav>
+
+<main id="top">
+
+  <header>
+    <h1>Kodo Flow</h1>
+    <p class="tagline">"Documentation-driven task management, the way Git intended."</p>
+  </header>
+
+  <!-- ── What is Kodo Flow? ──────────────────────────── -->
+  <section id="what-is">
+    <h2>What is Kodo Flow?</h2>
+    <p>
+      Kodo Flow is a lightweight, file-based task management methodology. Every task is a plain
+      Markdown file sitting inside your repository, right alongside the code it describes.
+      There is no external service to authenticate against, no database to back up, and no
+      proprietary format to migrate away from someday. Your task history is your Git history.
+    </p>
+    <p>
+      Because tasks are ordinary files, they work with every editor, every CI system, and every
+      AI coding tool. You can <code>grep</code> them, <code>git log</code> them, review them in a
+      pull request, and auto-generate them from a script. Nothing about the methodology requires
+      a specific IDE, plugin, or operating system.
+    </p>
+    <p>
+      The core idea is simple: a task moves through your workflow by moving its file between
+      folders — <code>backlog/</code>, <code>doing/</code>, <code>done/</code>. The folder is
+      the status. Git records who moved it and when. That is the entire system.
+    </p>
+  </section>
+
+  <!-- ── Core Principles ────────────────────────────── -->
+  <section id="principles">
+    <h2>Core Principles</h2>
+    <ol>
+      <li>
+        <strong>Tasks are documents.</strong> Every task is a self-contained Markdown file with
+        YAML frontmatter and free-form prose sections. It carries its own context — why the work
+        exists, what done looks like, which files are affected — so a developer (or an AI assistant)
+        can understand it without hunting through a separate ticketing system.
+      </li>
+      <li>
+        <strong>The filesystem is the board.</strong> Status is encoded by folder location, not by
+        a field value in a database. Moving a file <em>is</em> the status change. No API calls,
+        no synchronization lag, no merge conflicts on a central store.
+      </li>
+      <li>
+        <strong>Git is the system of record.</strong> Every status transition, every edit to
+        acceptance criteria, every note added mid-task — all of it flows through a normal
+        <code>git commit</code>. You get a full audit trail, branching, code review, and blame for
+        free.
+      </li>
+      <li>
+        <strong>Convention over configuration.</strong> The folder layout, frontmatter fields, and
+        file naming scheme are defined once. Everyone on the team (and every tool) shares a single
+        mental model. There is nothing to configure per-project.
+      </li>
+      <li>
+        <strong>Human-readable first, tool-friendly second.</strong> Task files read naturally as
+        prose. Structured fields (frontmatter) are kept minimal so they stay easy to edit by hand.
+        Tooling — editors, scripts, AI — can parse and manipulate them, but a developer with
+        nothing but a terminal can always read, move, and update a task without any tooling at all.
+      </li>
+    </ol>
+  </section>
+
+  <!-- ── Repository Structure ───────────────────────── -->
+  <section id="structure">
+    <h2>Repository Structure</h2>
+    <p>
+      Kodo Flow uses three artifact types, each in its own folder. Where this root lives in
+      your repository is up to you — <code>docs/</code>, a top-level folder, or anywhere else
+      that fits your project.
+    </p>
+    <pre><code>your-root/
+├── epics/                         # Broad initiatives (flat folder, no sub-states)
+│   └── EPIC-1-platform-hardening.md
+├── specs/                         # Requirements and design documents (flat folder)
+│   └── SPEC-3-auth-requirements.md
+└── tasks/                         # Kanban board — the only folder with sub-states
+    ├── backlog/                   # Planned work not yet started
+    │   └── TASK-1-add-login-page.md
+    ├── doing/                     # Work currently in progress
+    │   └── TASK-42-api-rate-limiting.md
+    └── done/                      # Completed work (never deleted)
+        └── TASK-7-initial-setup.md</code></pre>
+    <p>
+      Only <code>tasks/</code> has the <code>backlog/</code>, <code>doing/</code>,
+      <code>done/</code> sub-states that form the Kanban board. Epics and specs are flat
+      folders — they don't have a workflow status because they describe intent and requirements,
+      not deliverable units of work.
+    </p>
+    <p>
+      File names always embed the stable ID: <code>PREFIX-N-short-slug.md</code>. The prefix
+      and number are permanent; the slug is a human-readable hint that can be updated as the
+      work evolves. See <a href="#ids">IDs and Cross-references</a> for how artifacts reference
+      each other.
+    </p>
+    <p>
+      The <code>done/</code> folder accumulates completed tasks indefinitely. Do not delete
+      them — they are a searchable record of decisions made and work delivered.
+    </p>
+  </section>
+
+  <!-- ── IDs and Cross-references ───────────────────── -->
+  <section id="ids">
+    <h2>IDs and Cross-references</h2>
+    <p>
+      The three artifact types form a simple hierarchy. Each level can optionally reference
+      the level above it:
+    </p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Prefix</th><th>Artifact</th><th>References</th><th>Purpose</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>EPIC-N</code></td>
+            <td>Epic</td>
+            <td>—</td>
+            <td>A broad initiative or theme. Stands alone; does not reference other artifacts.</td>
+          </tr>
+          <tr>
+            <td><code>SPEC-N</code></td>
+            <td>Spec</td>
+            <td><code>epic: EPIC-N</code></td>
+            <td>A requirements or design document scoped to one epic.</td>
+          </tr>
+          <tr>
+            <td><code>TASK-N</code></td>
+            <td>Task</td>
+            <td><code>spec: SPEC-N</code></td>
+            <td>A discrete unit of deliverable work implementing part of a spec.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Stable IDs, not paths</h3>
+    <p>
+      Every artifact declares its ID in frontmatter and the ID is embedded in the file name.
+      Cross-references always use just the ID — never a file path — so a file can be renamed
+      without breaking any reference elsewhere in the system.
+    </p>
+    <p>
+      A spec referencing its parent epic can do so in several ways:
+    </p>
+    <pre><code># Plain ID in frontmatter — canonical form, always accepted by tooling
+epic: EPIC-1
+
+# Markdown link in frontmatter — also accepted; tooling strips the path and reads the ID
+epic: [EPIC-1](../epics/EPIC-1-platform-hardening.md)
+
+# In prose — for human navigation in rendered Markdown
+See [EPIC-1](../epics/EPIC-1-platform-hardening.md) for the initiative context.</code></pre>
+    <p>
+      The plain ID form is preferred in frontmatter fields. The Markdown link form is also
+      accepted — useful when copying a reference from rendered prose — and tooling will resolve
+      both identically. The ID prefix is always the authoritative key; the path component of the
+      link is ignored.
+    </p>
+
+    <h3>Resolving an ID</h3>
+    <p>
+      Any ID can be resolved without tooling by grepping frontmatter across the repository:
+    </p>
+    <pre><code>grep -r "^id: SPEC-3" .</code></pre>
+    <p>
+      Renaming <code>SPEC-3-auth-requirements.md</code> to
+      <code>SPEC-3-authentication-and-authorization.md</code> is a safe refactor: every
+      reference says <code>spec: SPEC-3</code>, not a path. The only thing that must never
+      change is the prefix and number.
+    </p>
+
+    <h3>No leading zeros</h3>
+    <p>
+      IDs use plain integers: <code>TASK-1</code>, <code>TASK-42</code>, <code>EPIC-3</code>,
+      <code>SPEC-12</code>. Do not pad with zeros. Leading zeros create an artificial ceiling
+      (pad to three digits and you imply a limit of 999) and make lexicographic sorting
+      misleading once you exceed the padding width.
+    </p>
+  </section>
+
+  <!-- ── Task File Format ───────────────────────────── -->
+  <section id="format">
+    <h2>Task File Format</h2>
+    <p>
+      Each task file begins with YAML frontmatter, followed by free-form Markdown sections.
+      Below is a complete example:
+    </p>
+    <pre><code>---
+id: TASK-42
+title: Add rate limiting to the public API
+type: feature
+status: doing
+priority: high
+readiness: ready
+epic: EPIC-1
+spec: SPEC-3
+labels:
+  - backend
+depends_on:
+  - TASK-38
+estimate: m
+risk: low
+created_at: 2026-03-01
+---
+
+## Goal
+
+Prevent API abuse by enforcing per-client request limits without
+degrading response times for well-behaved clients.
+
+## Acceptance Criteria
+
+- [ ] Requests exceeding the limit receive HTTP 429 with a `Retry-After` header
+- [ ] Limits are configurable per API key tier (free / pro / enterprise)
+- [ ] P99 latency for requests under the limit does not increase by more than 5 ms
+- [ ] Limit counters reset on a rolling 60-second window
+
+## Notes
+
+Using an in-process token-bucket per worker. Redis is not available in
+the current infra — revisit if we go multi-region.
+
+## Code Paths
+
+- `src/api/middleware/rate_limit.py`
+- `src/api/config/tiers.yaml`
+</code></pre>
+
+    <h3>Frontmatter field reference</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Field</th>
+            <th>Required</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>id</code></td>
+            <td>Yes</td>
+            <td>
+              Stable typed identifier — <code>TASK-N</code>, <code>EPIC-N</code>, or
+              <code>SPEC-N</code>. Never changes after creation, even if the file is renamed.
+              See <a href="#ids">IDs and Cross-references</a>.
+            </td>
+          </tr>
+          <tr>
+            <td><code>title</code></td>
+            <td>Yes</td>
+            <td>One-line description of the work. Should complete the sentence "We need to…"</td>
+          </tr>
+          <tr>
+            <td><code>status</code></td>
+            <td>Yes</td>
+            <td>
+              <code>backlog</code>, <code>doing</code>, or <code>done</code>. Must match the
+              containing folder. Update this field when you move the file.
+            </td>
+          </tr>
+          <tr>
+            <td><code>priority</code></td>
+            <td>No</td>
+            <td><code>critical</code> / <code>high</code> / <code>medium</code> / <code>low</code>. Defaults to <code>medium</code> if omitted.</td>
+          </tr>
+          <tr>
+            <td><code>type</code></td>
+            <td>No</td>
+            <td><code>feature</code> / <code>bug</code> / <code>chore</code> / <code>spike</code>. Defaults to <code>feature</code> if omitted.</td>
+          </tr>
+          <tr>
+            <td><code>readiness</code></td>
+            <td>No</td>
+            <td><code>draft</code> / <code>ready</code>. Indicates whether the task is fully specified and ready to be worked.</td>
+          </tr>
+          <tr>
+            <td><code>epic</code></td>
+            <td>No</td>
+            <td><code>EPIC-N</code> ID of the parent epic. Accepted as a plain ID or a Markdown link — <code>EPIC-1</code> and <code>[EPIC-1](../epics/EPIC-1-slug.md)</code> are equivalent.</td>
+          </tr>
+          <tr>
+            <td><code>spec</code></td>
+            <td>No</td>
+            <td>
+              <code>SPEC-N</code> ID of the spec this task implements. Accepted as a plain ID or a Markdown link — <code>SPEC-3</code> and <code>[SPEC-3](../specs/SPEC-3-slug.md)</code> are equivalent.
+            </td>
+          </tr>
+          <tr>
+            <td><code>labels</code></td>
+            <td>No</td>
+            <td>YAML list of free-form tag strings (e.g. <code>backend</code>, <code>infra</code>).</td>
+          </tr>
+          <tr>
+            <td><code>depends_on</code></td>
+            <td>No</td>
+            <td>YAML list of <code>TASK-N</code> IDs that must be completed before this task can start.</td>
+          </tr>
+          <tr>
+            <td><code>estimate</code></td>
+            <td>No</td>
+            <td>T-shirt size estimate: <code>xs</code> / <code>s</code> / <code>m</code> / <code>l</code> / <code>xl</code>.</td>
+          </tr>
+          <tr>
+            <td><code>risk</code></td>
+            <td>No</td>
+            <td><code>low</code> / <code>medium</code> / <code>high</code>. Flags tasks with significant uncertainty or blast radius.</td>
+          </tr>
+          <tr>
+            <td><code>created_at</code></td>
+            <td>No</td>
+            <td>ISO 8601 date (<code>YYYY-MM-DD</code>) the task was first written.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Markdown sections</h3>
+    <p>
+      The sections below the frontmatter are free-form prose. The names shown above
+      (<strong>Goal</strong>, <strong>Acceptance Criteria</strong>, <strong>Notes</strong>,
+      <strong>Code Paths</strong>) are recommended but not enforced. Add, rename, or omit
+      sections to fit your team's needs. The only convention is that a task should always
+      contain enough context that a developer — or an AI assistant — can pick it up cold
+      and understand what needs to be done and why.
+    </p>
+  </section>
+
+  <!-- ── Getting Started ────────────────────────────── -->
+  <section id="getting-started">
+    <h2>Getting Started</h2>
+    <p>No installation required. Set up the folder structure, write a task file, and start working.</p>
+    <ol class="steps">
+      <li>
+        <div>
+          <strong>Create the folder structure</strong> inside your existing repository.
+          Choose a root path that fits your project — a top-level folder, under
+          <code>docs/</code>, or anywhere else:
+          <pre><code>mkdir -p epics specs tasks/backlog tasks/doing tasks/done</code></pre>
+          Commit this empty structure with a <code>.gitkeep</code> in each folder so the
+          directories are tracked.
+        </div>
+      </li>
+      <li>
+        <div>
+          <strong>Write your first task.</strong> Create a file like
+          <code>tasks/backlog/TASK-1-your-first-task.md</code> with at minimum a frontmatter
+          block and a Goal section. Use the example above as a starting point.
+        </div>
+      </li>
+      <li>
+        <div>
+          <strong>Commit it to Git:</strong>
+          <pre><code>git add tasks/
+git commit -m "chore: initialize Kodo Flow task structure"</code></pre>
+          From this point on, every task change is a commit.
+        </div>
+      </li>
+      <li>
+        <div>
+          <strong>Start a task</strong> by moving it from <code>backlog/</code> to
+          <code>doing/</code> and updating the <code>status</code> field in the frontmatter:
+          <pre><code>git mv tasks/backlog/TASK-1-your-first-task.md \
+        tasks/doing/TASK-1-your-first-task.md</code></pre>
+          Then open the file, change <code>status: backlog</code> to <code>status: doing</code>,
+          and commit.
+        </div>
+      </li>
+      <li>
+        <div>
+          <strong>Complete a task</strong> by moving it to <code>done/</code>, updating
+          <code>status: done</code>, and committing. The file stays in the repository forever
+          as a record of delivered work.
+        </div>
+      </li>
+      <li>
+        <div>
+          <strong>Share the convention with your team.</strong> Add a brief note to your
+          <code>CONTRIBUTING.md</code> explaining the task folder layout and frontmatter
+          fields. That is the only "setup" other developers need.
+        </div>
+      </li>
+    </ol>
+  </section>
+
+  <!-- ── VS Code Extension ──────────────────────────── -->
+  <section id="extension">
+    <h2>Using the KodoFlow Extension</h2>
+    <p>
+      The methodology is designed to work with any editor and any toolchain. If you use
+      <strong>Visual Studio Code</strong>, the KodoFlow extension gives you a visual Kanban
+      board over this same file structure — drag cards between columns to move tasks, click a
+      card to open its Markdown file, and create new tasks through a guided prompt.
+    </p>
+    <div class="callout">
+      <p>
+        The extension scans your workspace for Kodo Flow task folders and reads and writes
+        the same files described above. There is no proprietary format, no lock-in, and no
+        divergence from the methodology. Team members without VS Code continue to work with
+        plain files and Git commands.
+      </p>
+      <p>
+        <a href="https://github.com/jvanord/kodoflow">View the KodoFlow extension on GitHub →</a>
+      </p>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <p>
+    Kodo Flow is an open methodology. Use it freely.
+    &nbsp;·&nbsp;
+    <a href="https://github.com/jvanord/kodoflow">GitHub</a>
+  </p>
+</footer>
+
+</body>
+</html>
