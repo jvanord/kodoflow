@@ -1,0 +1,88 @@
+{
+  "name": "kodoflow",
+  "displayName": "KodoFlow",
+  "description": "Kanban board for documentation-driven development with Markdown task files",
+  "version": "0.1.0",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": ["Other"],
+  "activationEvents": ["onView:kodoflow.explorer", "onCommand:kodoflow.openBoard"],
+  "main": "./out/extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "kodoflow",
+          "title": "KodoFlow",
+          "icon": "media/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "kodoflow": [
+        { "id": "kodoflow.explorer", "name": "Explorer" }
+      ]
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "kodoflow.openBoard",
+          "when": "view == kodoflow.explorer",
+          "group": "navigation"
+        }
+      ]
+    },
+    "commands": [
+      { "command": "kodoflow.openBoard", "title": "KodoFlow: Open Board", "icon": "$(table)" },
+      { "command": "kodoflow.createTask", "title": "KodoFlow: Create Task" },
+      { "command": "kodoflow.refreshIndex", "title": "KodoFlow: Refresh Index" },
+      { "command": "kodoflow.openTaskFile", "title": "KodoFlow: Open Task File" },
+      { "command": "kodoflow.openSpec", "title": "KodoFlow: Open Spec" },
+      { "command": "kodoflow.openEpic", "title": "KodoFlow: Open Epic" },
+      { "command": "kodoflow.openCodePath", "title": "KodoFlow: Open Code Path" },
+      { "command": "kodoflow.moveTaskToBacklog", "title": "KodoFlow: Move Task to Backlog" },
+      { "command": "kodoflow.moveTaskToDoing", "title": "KodoFlow: Move Task to Doing" },
+      { "command": "kodoflow.moveTaskToDone", "title": "KodoFlow: Move Task to Done" }
+    ],
+    "configuration": {
+      "title": "KodoFlow",
+      "properties": {
+        "kodoflow.basePath": {
+          "type": "string",
+          "default": "docs/product",
+          "description": "Base path for product documentation within the workspace"
+        },
+        "kodoflow.tasksFolder": {
+          "type": "string",
+          "default": "tasks",
+          "description": "Tasks folder name (relative to basePath)"
+        },
+        "kodoflow.specsFolder": {
+          "type": "string",
+          "default": "specs",
+          "description": "Specs folder name (relative to basePath)"
+        },
+        "kodoflow.epicsFolder": {
+          "type": "string",
+          "default": "epics",
+          "description": "Epics folder name (relative to basePath)"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "vscode:prepublish": "npm run compile"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.85.0",
+    "typescript": "^5.3.0"
+  },
+  "dependencies": {
+    "js-yaml": "^4.1.0"
+  }
+}

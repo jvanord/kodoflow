@@ -1,0 +1,13 @@
+{
+  "folders": [
+    {
+      "path": "../../Pickaxe/pickaxe-monorepo",
+    },
+  ],
+  "settings": {
+    "terminal.integrated.env.osx": {
+      "PATH": "/opt/homebrew/opt/openjdk/bin:/usr/local/opt/openjdk/bin:${env:PATH}",
+    },
+    "typescript.tsdk": "node_modules/typescript/lib",
+  },
+}
