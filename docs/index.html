@@ -128,8 +128,8 @@
   <section id="ids">
     <h2>IDs and Cross-references</h2>
     <p>
-      The three artifact types form a simple hierarchy. Each level can optionally reference
-      the level above it:
+      The three artifact types form a simple hierarchy. References only point <em>upward</em>
+      — a child declares its parent, never the other way around:
     </p>
     <div class="table-wrap">
       <table>
@@ -141,23 +141,30 @@
             <td><code>EPIC-N</code></td>
             <td>Epic</td>
             <td>—</td>
-            <td>A broad initiative or theme. Stands alone; does not reference other artifacts.</td>
+            <td>A broad initiative or theme. Stands alone; does not list or track its specs.</td>
           </tr>
           <tr>
             <td><code>SPEC-N</code></td>
             <td>Spec</td>
             <td><code>epic: EPIC-N</code></td>
-            <td>A requirements or design document scoped to one epic.</td>
+            <td>A requirements or design document. References its parent epic; does not list or track its tasks.</td>
           </tr>
           <tr>
             <td><code>TASK-N</code></td>
             <td>Task</td>
             <td><code>spec: SPEC-N</code></td>
-            <td>A discrete unit of deliverable work implementing part of a spec.</td>
+            <td>A discrete unit of deliverable work. References its parent spec.</td>
           </tr>
         </tbody>
       </table>
     </div>
+
+    <p>
+      An epic is not responsible for knowing which specs belong to it, and a spec is not
+      responsible for knowing which tasks implement it. Membership is always declared by the
+      child. To find all specs under an epic, grep for <code>epic: EPIC-N</code> across the
+      specs folder — the parent file itself never needs updating when a child is added or removed.
+    </p>
 
     <h3>Stable IDs, not paths</h3>
     <p>
@@ -284,12 +291,12 @@ the current infra — revisit if we go multi-region.
           <tr>
             <td><code>type</code></td>
             <td>No</td>
-            <td><code>feature</code> / <code>bug</code> / <code>chore</code> / <code>spike</code>. Defaults to <code>feature</code> if omitted.</td>
+            <td><code>feature</code> / <code>bug</code> / <code>chore</code> / <code>spike</code> / <code>research</code> / <code>refactor</code>. Defaults to <code>feature</code> if omitted.</td>
           </tr>
           <tr>
             <td><code>readiness</code></td>
             <td>No</td>
-            <td><code>draft</code> / <code>ready</code>. Indicates whether the task is fully specified and ready to be worked.</td>
+            <td><code>draft</code> / <code>ready</code> / <code>blocked</code> / <code>in_review</code> / <code>cancelled</code>. Indicates whether the task is fully specified and ready to be worked.</td>
           </tr>
           <tr>
             <td><code>epic</code></td>

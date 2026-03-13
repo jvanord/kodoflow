@@ -107,7 +107,7 @@ async function collectTaskData(): Promise<
   if (!title) return undefined;
 
   const type = await vscode.window.showQuickPick(
-    ['feature', 'bug', 'chore', 'docs', 'refactor'],
+    ['feature', 'bug', 'chore', 'spike', 'research', 'refactor'],
     { placeHolder: 'Task type' }
   );
   if (!type) return undefined;
@@ -117,7 +117,7 @@ async function collectTaskData(): Promise<
   });
   if (!priority) return undefined;
 
-  const readiness = await vscode.window.showQuickPick(['draft', 'ready', 'blocked'], {
+  const readiness = await vscode.window.showQuickPick(['draft', 'ready', 'blocked', 'in_review', 'cancelled'], {
     placeHolder: 'Readiness',
   });
   if (!readiness) return undefined;
