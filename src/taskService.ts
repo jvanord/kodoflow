@@ -3,7 +3,7 @@ import * as vscode from 'vscode';
 import { Task } from './types';
 import { RepositoryIndex } from './repositoryIndex';
 import { writeFile, readFile, deleteFile } from './fileMutator';
-import { updateFrontmatterStatus, generateTaskContent } from './taskParser';
+import { generateTaskContent } from './taskParser';
 
 export class TaskService {
   constructor(
@@ -30,9 +30,7 @@ export class TaskService {
     const targetPath = path.join(targetDir, fileName);
 
     const content = await readFile(task.filePath);
-    const updated = updateFrontmatterStatus(content, targetStatus);
-
-    await writeFile(targetPath, updated);
+    await writeFile(targetPath, content);
 
     if (task.filePath !== targetPath) {
       await deleteFile(task.filePath);

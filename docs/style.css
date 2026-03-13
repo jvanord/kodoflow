@@ -220,6 +220,10 @@ td {
   line-height: 1.5;
 }
 
+td code {
+  white-space: nowrap;
+}
+
 tr:nth-child(even) td {
   background: #fafbfc;
 }

@@ -45,7 +45,6 @@ Each task is a Markdown document with YAML frontmatter:
 id: TASK-118
 title: Implement RSS feed parser
 type: feature
-status: backlog
 priority: high
 readiness: ready
 epic: EPIC-3

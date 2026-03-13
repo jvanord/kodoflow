@@ -45,14 +45,6 @@ export function parseTask(
   };
 }
 
-export function updateFrontmatterStatus(content: string, newStatus: string): string {
-  // Replace the status field in frontmatter
-  return content.replace(
-    /(^---\r?\n[\s\S]*?)(^status:\s*\S+)([\s\S]*?\n---)/m,
-    `$1status: ${newStatus}$3`
-  );
-}
-
 export function generateTaskContent(data: {
   id: string;
   title: string;
@@ -76,7 +68,6 @@ export function generateTaskContent(data: {
 id: ${data.id}
 title: ${data.title}
 type: ${data.type || 'feature'}
-status: backlog
 priority: ${data.priority || 'medium'}
 readiness: ${data.readiness || 'draft'}
 epic: ${data.epic || ''}

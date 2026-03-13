@@ -215,7 +215,6 @@ See [EPIC-1](../epics/EPIC-1-platform-hardening.md) for the initiative context.<
 id: TASK-42
 title: Add rate limiting to the public API
 type: feature
-status: doing
 priority: high
 readiness: ready
 epic: EPIC-1
@@ -276,14 +275,6 @@ the current infra — revisit if we go multi-region.
             <td><code>title</code></td>
             <td>Yes</td>
             <td>One-line description of the work. Should complete the sentence "We need to…"</td>
-          </tr>
-          <tr>
-            <td><code>status</code></td>
-            <td>Yes</td>
-            <td>
-              <code>backlog</code>, <code>doing</code>, or <code>done</code>. Must match the
-              containing folder. Update this field when you move the file.
-            </td>
           </tr>
           <tr>
             <td><code>priority</code></td>
@@ -385,18 +376,17 @@ git commit -m "chore: initialize Kodo Flow task structure"</code></pre>
       <li>
         <div>
           <strong>Start a task</strong> by moving it from <code>backlog/</code> to
-          <code>doing/</code> and updating the <code>status</code> field in the frontmatter:
+          <code>doing/</code> and committing:
           <pre><code>git mv tasks/backlog/TASK-1-your-first-task.md \
-        tasks/doing/TASK-1-your-first-task.md</code></pre>
-          Then open the file, change <code>status: backlog</code> to <code>status: doing</code>,
-          and commit.
+        tasks/doing/TASK-1-your-first-task.md
+git commit -m "Start TASK-1"</code></pre>
+          The folder move is the status change — no frontmatter edit required.
         </div>
       </li>
       <li>
         <div>
-          <strong>Complete a task</strong> by moving it to <code>done/</code>, updating
-          <code>status: done</code>, and committing. The file stays in the repository forever
-          as a record of delivered work.
+          <strong>Complete a task</strong> by moving it to <code>done/</code> and committing.
+          The file stays in the repository forever as a record of delivered work.
         </div>
       </li>
       <li>
