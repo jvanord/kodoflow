@@ -2,12 +2,22 @@
   "name": "kodoflow",
   "displayName": "KodoFlow",
   "description": "Kanban board for documentation-driven development with Markdown task files",
-  "version": "0.1.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jvanord/kodoflow"
+  },
+  "license": "MIT",
+  "version": "0.1.1",
   "engines": {
     "vscode": "^1.85.0"
   },
-  "categories": ["Other"],
-  "activationEvents": ["onView:kodoflow.explorer", "onCommand:kodoflow.openBoard"],
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onView:kodoflow.explorer",
+    "onCommand:kodoflow.openBoard"
+  ],
   "main": "./out/extension.js",
   "contributes": {
     "viewsContainers": {
@@ -21,7 +31,10 @@
     },
     "views": {
       "kodoflow": [
-        { "id": "kodoflow.explorer", "name": "Explorer" }
+        {
+          "id": "kodoflow.explorer",
+          "name": "Explorer"
+        }
       ]
     },
     "menus": {
@@ -34,16 +47,47 @@
       ]
     },
     "commands": [
-      { "command": "kodoflow.openBoard", "title": "KodoFlow: Open Board", "icon": "$(table)" },
-      { "command": "kodoflow.createTask", "title": "KodoFlow: Create Task" },
-      { "command": "kodoflow.refreshIndex", "title": "KodoFlow: Refresh Index" },
-      { "command": "kodoflow.openTaskFile", "title": "KodoFlow: Open Task File" },
-      { "command": "kodoflow.openSpec", "title": "KodoFlow: Open Spec" },
-      { "command": "kodoflow.openEpic", "title": "KodoFlow: Open Epic" },
-      { "command": "kodoflow.openCodePath", "title": "KodoFlow: Open Code Path" },
-      { "command": "kodoflow.moveTaskToBacklog", "title": "KodoFlow: Move Task to Backlog" },
-      { "command": "kodoflow.moveTaskToDoing", "title": "KodoFlow: Move Task to Doing" },
-      { "command": "kodoflow.moveTaskToDone", "title": "KodoFlow: Move Task to Done" }
+      {
+        "command": "kodoflow.openBoard",
+        "title": "KodoFlow: Open Board",
+        "icon": "$(table)"
+      },
+      {
+        "command": "kodoflow.createTask",
+        "title": "KodoFlow: Create Task"
+      },
+      {
+        "command": "kodoflow.refreshIndex",
+        "title": "KodoFlow: Refresh Index"
+      },
+      {
+        "command": "kodoflow.openTaskFile",
+        "title": "KodoFlow: Open Task File"
+      },
+      {
+        "command": "kodoflow.openSpec",
+        "title": "KodoFlow: Open Spec"
+      },
+      {
+        "command": "kodoflow.openEpic",
+        "title": "KodoFlow: Open Epic"
+      },
+      {
+        "command": "kodoflow.openCodePath",
+        "title": "KodoFlow: Open Code Path"
+      },
+      {
+        "command": "kodoflow.moveTaskToBacklog",
+        "title": "KodoFlow: Move Task to Backlog"
+      },
+      {
+        "command": "kodoflow.moveTaskToDoing",
+        "title": "KodoFlow: Move Task to Doing"
+      },
+      {
+        "command": "kodoflow.moveTaskToDone",
+        "title": "KodoFlow: Move Task to Done"
+      }
     ],
     "configuration": {
       "title": "KodoFlow",
@@ -72,14 +116,16 @@
     }
   },
   "scripts": {
-    "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./",
-    "vscode:prepublish": "npm run compile"
+    "compile": "node esbuild.js",
+    "watch": "node esbuild.js --watch",
+    "typecheck": "tsc --noEmit",
+    "vscode:prepublish": "node esbuild.js --production"
   },
   "devDependencies": {
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^20.0.0",
     "@types/vscode": "^1.85.0",
+    "esbuild": "^0.27.4",
     "typescript": "^5.3.0"
   },
   "dependencies": {
