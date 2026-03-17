@@ -8,7 +8,8 @@ import { generateTaskContent } from './taskParser';
 export class TaskService {
   constructor(
     private readonly index: RepositoryIndex,
-    private readonly workspaceRoot: string
+    private readonly workspaceRoot: string,
+    private readonly channel: vscode.OutputChannel
   ) {}
 
   private getConfig() {
@@ -29,12 +30,14 @@ export class TaskService {
     const targetDir = path.join(this.workspaceRoot, basePath, tasksFolder, targetStatus);
     const targetPath = path.join(targetDir, fileName);
 
+    this.channel.appendLine(`Moving ${taskId}: ${task.status} → ${targetStatus} (${fileName})`);
     const content = await readFile(task.filePath);
     await writeFile(targetPath, content);
 
     if (task.filePath !== targetPath) {
       await deleteFile(task.filePath);
     }
+    this.channel.appendLine(`Moved ${taskId} to ${targetPath}`);
   }
 
   async createTask(data: {
@@ -57,8 +60,10 @@ export class TaskService {
     const fileName = `${id}-${slug}.md`;
     const filePath = path.join(this.workspaceRoot, basePath, tasksFolder, 'backlog', fileName);
 
+    this.channel.appendLine(`Creating task ${id}: "${data.title}" → ${filePath}`);
     const content = generateTaskContent({ ...data, id });
     await writeFile(filePath, content);
+    this.channel.appendLine(`Created ${id}`);
 
     return {
       id,

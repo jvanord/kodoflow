@@ -14,7 +14,10 @@ export class RepositoryIndex {
   private readonly _onDidChange = new vscode.EventEmitter<void>();
   readonly onDidChange = this._onDidChange.event;
 
-  constructor(private readonly workspaceRoot: string) {}
+  constructor(
+    private readonly workspaceRoot: string,
+    private readonly channel: vscode.OutputChannel
+  ) {}
 
   get tasks(): Task[] {
     return this._tasks;
@@ -51,6 +54,7 @@ export class RepositoryIndex {
   }
 
   async refresh(): Promise<void> {
+    this.channel.appendLine('Index refresh started.');
     this._tasks = [];
     this._warnings = [];
     this._specPaths.clear();
@@ -64,6 +68,13 @@ export class RepositoryIndex {
     await this.loadArtifacts(path.join(basePath, specsFolder), this._specPaths, this._specFiles);
     await this.loadArtifacts(path.join(basePath, epicsFolder), this._epicPaths, this._epicFiles);
     this.validateTasks();
+
+    this.channel.appendLine(
+      `Index refresh complete: ${this._tasks.length} task(s), ${this._specFiles.length} spec(s), ${this._epicFiles.length} epic(s), ${this._warnings.length} warning(s).`
+    );
+    for (const w of this._warnings) {
+      this.channel.appendLine(`  [${w.type}] ${w.message}`);
+    }
 
     this._onDidChange.fire();
   }
@@ -91,7 +102,8 @@ export class RepositoryIndex {
         try {
           const bytes = await vscode.workspace.fs.readFile(vscode.Uri.file(filePath));
           content = Buffer.from(bytes).toString('utf-8');
-        } catch {
+        } catch (err) {
+          this.channel.appendLine(`  Could not read file: ${filePath} — ${err}`);
           this._warnings.push({
             type: 'invalidFrontmatter',
             message: `Could not read file: ${name}`,
@@ -102,6 +114,7 @@ export class RepositoryIndex {
 
         const task = parseTask(content, filePath, status);
         if (!task) {
+          this.channel.appendLine(`  Invalid or missing frontmatter: ${filePath}`);
           this._warnings.push({
             type: 'invalidFrontmatter',
             message: `Invalid or missing frontmatter: ${name}`,
@@ -111,6 +124,7 @@ export class RepositoryIndex {
         }
 
         if (!task.id) {
+          this.channel.appendLine(`  Task missing id field: ${filePath}`);
           this._warnings.push({
             type: 'invalidFrontmatter',
             message: `Task missing id field: ${name}`,

@@ -6,14 +6,21 @@ import { ExplorerProvider } from './explorerProvider';
 import { Task } from './types';
 
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
+  const channel = vscode.window.createOutputChannel('KodoFlow');
+  context.subscriptions.push(channel);
+  channel.appendLine('KodoFlow activating...');
+
   const workspaceFolders = vscode.workspace.workspaceFolders;
   if (!workspaceFolders || workspaceFolders.length === 0) {
+    channel.appendLine('No workspace folder found — aborting activation.');
     return;
   }
 
   const workspaceRoot = workspaceFolders[0].uri.fsPath;
-  const index = new RepositoryIndex(workspaceRoot);
-  const taskService = new TaskService(index, workspaceRoot);
+  channel.appendLine(`Workspace root: ${workspaceRoot}`);
+
+  const index = new RepositoryIndex(workspaceRoot, channel);
+  const taskService = new TaskService(index, workspaceRoot, channel);
 
   context.subscriptions.push(
     vscode.window.registerTreeDataProvider('kodoflow.explorer', new ExplorerProvider(index))
@@ -21,6 +28,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 
   index.startWatching(context);
   await index.refresh();
+  channel.appendLine('KodoFlow activated.');
 
   context.subscriptions.push(
     vscode.commands.registerCommand('kodoflow.openBoard', () => {
@@ -36,22 +44,22 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
       if (!data) return;
       try {
         await taskService.createTask(data);
-        // file watcher triggers index refresh automatically
       } catch (err) {
+        channel.appendLine(`createTask error: ${err}`);
         vscode.window.showErrorMessage(`KodoFlow: Failed to create task — ${err}`);
       }
     }),
 
     vscode.commands.registerCommand('kodoflow.moveTaskToBacklog', () =>
-      moveTaskViaCommand(index, taskService, 'backlog')
+      moveTaskViaCommand(index, taskService, 'backlog', channel)
     ),
 
     vscode.commands.registerCommand('kodoflow.moveTaskToDoing', () =>
-      moveTaskViaCommand(index, taskService, 'doing')
+      moveTaskViaCommand(index, taskService, 'doing', channel)
     ),
 
     vscode.commands.registerCommand('kodoflow.moveTaskToDone', () =>
-      moveTaskViaCommand(index, taskService, 'done')
+      moveTaskViaCommand(index, taskService, 'done', channel)
     ),
 
     vscode.commands.registerCommand('kodoflow.openTaskFile', async () => {
@@ -182,13 +190,15 @@ async function pickTask(index: RepositoryIndex): Promise<Task | undefined> {
 async function moveTaskViaCommand(
   index: RepositoryIndex,
   taskService: TaskService,
-  targetStatus: 'backlog' | 'doing' | 'done'
+  targetStatus: 'backlog' | 'doing' | 'done',
+  channel: vscode.OutputChannel
 ): Promise<void> {
   const task = await pickTask(index);
   if (!task) return;
   try {
     await taskService.moveTask(task.id, targetStatus);
   } catch (err) {
+    channel.appendLine(`moveTask error: ${err}`);
     vscode.window.showErrorMessage(`KodoFlow: Failed to move task — ${err}`);
   }
 }
