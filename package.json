@@ -1,5 +1,6 @@
 {
   "name": "kodoflow",
+  "publisher": "jvanord",
   "displayName": "KodoFlow",
   "description": "Kanban board for documentation-driven development with Markdown task files",
   "repository": {
@@ -7,7 +8,7 @@
     "url": "https://github.com/jvanord/kodoflow"
   },
   "license": "MIT",
-  "version": "0.1.1",
+  "version": "0.1.3",
   "engines": {
     "vscode": "^1.85.0"
   },
