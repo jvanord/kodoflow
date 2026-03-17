@@ -1,5 +1,7 @@
+**/.DS_Store
+.claude/
+.vscode-test/
+.vscode/debug.code-workspace
 out/
 node_modules/
-.vscode-test/
 *.vsix
-.claude/
